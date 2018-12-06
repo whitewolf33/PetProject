@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PetProject.BusinessLayer.Configurations;
+using PetProject.BusinessLayer.Helpers;
 using PetProject.BusinessLayer.Interfaces;
 using PetProject.BusinessLayer.Services;
 using Polly;
@@ -11,7 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace PetProject
@@ -48,6 +48,9 @@ namespace PetProject
             }
         }
 
+        /// <summary>
+        /// Main Menu with options
+        /// </summary>
         private static void MainMenu()
         {
             bool loop = true;
@@ -84,7 +87,10 @@ namespace PetProject
                 }
             }
         }
-
+        /// <summary>
+        /// Method to get the pets from the API 
+        /// and display the cats grouped under their Owner's gender
+        /// </summary>
         private static void DisplayCatsUnderOwnersGender()
         {
             var petService = serviceProvider.GetService<IPetService>();
@@ -131,6 +137,10 @@ namespace PetProject
             Task.WaitAll(actions.Select(a => a.Invoke()).ToArray());
         }
 
+        /// <summary>
+        /// Configure the required services for this app
+        /// </summary>
+        /// <param name="serviceCollection"></param>
         static void ConfigureServices(IServiceCollection serviceCollection)
         {
             //Setup Logging
@@ -171,6 +181,11 @@ namespace PetProject
             serviceCollection.AddTransient(typeof(IPetService), typeof(PetService));
         }
 
+        /// <summary>
+        /// Method to display results by a Group Key
+        /// Potential extention with future versions
+        /// </summary>
+        /// <param name="resultList"></param>
         private static void DisplayGroupedResults(List<IGroupable> resultList)
         {
             //Group By Gender to Print under headers

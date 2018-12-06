@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace PetProject.BusinessLayer.Services
@@ -25,14 +24,19 @@ namespace PetProject.BusinessLayer.Services
             _logger = logger;
             _httpClient = typedClient.Client;
         }
-
+        /// <summary>
+        /// Async Method to consume the PetAPI 
+        /// returns a list of PetOwners with their registered pets
+        /// </summary>
+        /// <returns>List<PetOwners></PetOwners></returns>
         public async Task<StandardResponse<List<PetOwner>>> GetPetOwnersAsync()
         {
             var stdResponse = new StandardResponse<List<PetOwner>>();
             try
             {
                 var baseUrl = _repoConfig.Url;
-                _logger.LogDebug($"Path for the WebAPI is {baseUrl}");               
+                _logger.LogDebug($"Path for the WebAPI is {baseUrl}");
+                //Set the baseUrl here to allow for changes in the middle of execution
                 _httpClient.BaseAddress = new Uri(baseUrl);
                 _httpClient.DefaultRequestHeaders.Accept.Clear();
                 _httpClient.DefaultRequestHeaders.Accept.Add(
@@ -47,6 +51,7 @@ namespace PetProject.BusinessLayer.Services
                     var result = await response.Content.ReadAsStringAsync();
                     if (!result.IsNullOrEmpty())
                     {
+                        //NOTE: Talk to business about considering caching of the results using Polly.Cache
                         var petOwnersList = JsonConvert.DeserializeObject<List<PetOwner>>(result);
                         _logger.LogDebug($"Http Request resulted with {petOwnersList.Count} owners");
 
@@ -65,7 +70,12 @@ namespace PetProject.BusinessLayer.Services
             }
             return stdResponse;
         }
-
+        /// <summary>
+        /// Grouping of the pets by the gender of their owner        
+        /// </summary>
+        /// <param name="petOwnersList">list of petowners with their pets</param>
+        /// <param name="petType"> Ability to filter by a chosen PetType</param>
+        /// <returns>Returns an IGroupable to print</returns>
         public async Task<List<IGroupable>> GetPetsByOwnerGender(List<PetOwner> petOwnersList, PetType petType)
         {
             if (petOwnersList == null)
@@ -102,16 +112,6 @@ namespace PetProject.BusinessLayer.Services
             }
             return null;
         }
-    }
-
-    public class TypedHttpClient
-    {        
-        public virtual HttpClient Client { get; private set; }       
-
-        public TypedHttpClient(HttpClient client)
-        {
-            Client = client;            
-        }        
     }
 }
 
