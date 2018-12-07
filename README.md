@@ -15,6 +15,13 @@ The main intent of this application is to consume a web API that returns a list 
 
     Version 1.0
 
+<h3>Features</h3>
+<ul>
+    <li>Resilient - The  application is resilient with the ability to retry three times (using Polly libraries) </li>
+    <li>Logging - The app has logging configured and could be extended to log to a file if required</li>
+    <li>Extendable - The core logic is in a BusinessLogic dll and this could be used with other clients if required</li>
+</ul>
+
 <h3>Tests</h3>
 
     Unit Tests using MSTest and Moq
